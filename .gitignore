@@ -1,0 +1,24 @@
+# Firebase
+.firebase/
+firebase-debug.log
+firebase-debug.log.*
+
+# Dependencies
+node_modules/
+functions/node_modules/
+
+# Environment Variables
+functions/.env
+.env
+.env.local
+.env.production
+.env.test
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# System Files
+.DS_Store
+Thumbs.db

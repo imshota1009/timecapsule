@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>タイムカプセル - 未来の自分へ手紙を送ろう</title>
+    <meta name="description" content="未来の自分に手紙を送ろう。指定した日にメールで届くタイムカプセルアプリ。">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&family=M+PLUS+Rounded+1c:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Stars Background -->
+    <div id="stars-container"></div>
+
+    <!-- Floating Particles -->
+    <div id="particles-container"></div>
+
+    <!-- ===== LANDING PAGE ===== -->
+    <div id="landing-page" class="page active">
+        <div class="landing-content">
+            <div class="capsule-icon-wrapper">
+                <div class="capsule-icon">💌</div>
+                <div class="capsule-glow"></div>
+            </div>
+            <h1 class="app-title">タイムカプセル</h1>
+            <p class="app-subtitle">未来の自分へ、手紙を送ろう</p>
+            <p class="app-description">
+                今の気持ちや想いを書いて、未来の自分に届けよう。<br>
+                指定した日になると、メールであなたの手紙が届きます。
+            </p>
+            <button id="start-btn" class="primary-btn" onclick="showPage('write-page')">
+                <span class="btn-icon">✉️</span>
+                <span>手紙を書く</span>
+            </button>
+            <button id="list-btn" class="secondary-btn" onclick="showPage('list-page')">
+                <span class="btn-icon">📦</span>
+                <span>送ったカプセルを見る</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ===== WRITE PAGE ===== -->
+    <div id="write-page" class="page">
+        <div class="page-inner">
+            <button class="back-btn" onclick="showPage('landing-page')">← もどる</button>
+            <div class="write-container">
+                <div class="letter-header">
+                    <div class="stamp">📮</div>
+                    <h2>未来の自分へ</h2>
+                </div>
+                <form id="capsule-form" onsubmit="return false;">
+                    <div class="form-group">
+                        <label for="sender-name">あなたの名前</label>
+                        <input type="text" id="sender-name" placeholder="名前を入力..." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="sender-email">メールアドレス</label>
+                        <input type="email" id="sender-email" placeholder="example@mail.com" required>
+                        <span class="form-hint">この宛先に手紙が届きます</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="delivery-date">届ける日</label>
+                        <input type="date" id="delivery-date" required>
+                        <span class="form-hint">この日にメールが届きます</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="letter-subject">件名</label>
+                        <input type="text" id="letter-subject" placeholder="例: 1年後の私へ" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="letter-body">手紙の内容</label>
+                        <textarea id="letter-body" rows="10"
+                            placeholder="未来の自分に伝えたいことを書いてください...&#10;&#10;今の気持ち、目標、夢、大切にしていること...&#10;なんでも自由に書いてください。"
+                            required></textarea>
+                    </div>
+                    <div class="form-group mood-group">
+                        <label>今の気分</label>
+                        <div class="mood-selector">
+                            <button type="button" class="mood-btn" data-mood="happy"
+                                onclick="selectMood(this)">😊</button>
+                            <button type="button" class="mood-btn" data-mood="excited"
+                                onclick="selectMood(this)">🤩</button>
+                            <button type="button" class="mood-btn" data-mood="peaceful"
+                                onclick="selectMood(this)">😌</button>
+                            <button type="button" class="mood-btn" data-mood="hopeful"
+                                onclick="selectMood(this)">🌟</button>
+                            <button type="button" class="mood-btn" data-mood="nostalgic"
+                                onclick="selectMood(this)">🥹</button>
+                            <button type="button" class="mood-btn" data-mood="determined"
+                                onclick="selectMood(this)">💪</button>
+                        </div>
+                    </div>
+                    <button type="button" id="send-btn" class="primary-btn send-btn" onclick="sealCapsule()">
+                        <span class="btn-icon">🔒</span>
+                        <span>カプセルを封印する</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SUCCESS PAGE ===== -->
+    <div id="success-page" class="page">
+        <div class="success-content">
+            <div class="success-animation">
+                <div class="rocket">🚀</div>
+            </div>
+            <h2 class="success-title">カプセル、封印完了！</h2>
+            <p class="success-subtitle" id="success-date-text"></p>
+            <p class="success-detail">指定した日になると、メールであなたの手紙が届きます。</p>
+            <div class="countdown-box" id="countdown-box">
+                <p class="countdown-label">届くまであと</p>
+                <div class="countdown-timer" id="countdown-timer"></div>
+            </div>
+            <button class="primary-btn" onclick="showPage('landing-page')">
+                <span class="btn-icon">🏠</span>
+                <span>ホームに戻る</span>
+            </button>
+            <button class="secondary-btn" onclick="showPage('write-page')">
+                <span class="btn-icon">✉️</span>
+                <span>もう一通書く</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ===== LIST PAGE ===== -->
+    <div id="list-page" class="page">
+        <div class="page-inner">
+            <button class="back-btn" onclick="showPage('landing-page')">← もどる</button>
+            <h2 class="list-title">📦 送ったカプセル</h2>
+            <p class="list-subtitle">あなたが未来の自分に送った手紙たち</p>
+            <div id="capsule-list" class="capsule-list">
+                <!-- Capsules will be rendered here -->
+            </div>
+            <div id="empty-state" class="empty-state">
+                <div class="empty-icon">📭</div>
+                <p>まだカプセルがありません</p>
+                <button class="secondary-btn" onclick="showPage('write-page')">最初の手紙を書く</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
