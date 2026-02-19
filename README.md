@@ -3,7 +3,7 @@
 未来の自分に手紙を送ろう。指定した日にメールで届くタイムカプセルアプリです。
 
 <div align="center">
-  <img src="https://via.placeholder.com/800x400/14142e/7c5bf5?text=Time+Capsule+Preview" alt="Time Capsule App Preview" width="100%">
+  <img src="images/picture.png" alt="Time Capsule App Preview" width="100%">
   <br><br>
   <a href="https://timecapsule-app-shota.web.app">
     <img src="https://img.shields.io/badge/Demo-Live_App-7c5bf5?style=for-the-badge&logo=firebase" alt="Live Demo">
