@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Outfit:wght@400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Outfit:wght@400;700&family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -22,10 +22,19 @@
     <!-- Floating Particles -->
     <div id="particles-container"></div>
 
+    <!-- Language Toggle -->
+    <div class="lang-toggle" id="lang-toggle">
+        <span class="lang-label" id="lang-label-en">EN</span>
+        <div class="lang-switch" id="lang-switch" onclick="toggleLanguage()">
+            <div class="lang-switch-knob" id="lang-knob"></div>
+        </div>
+        <span class="lang-label" id="lang-label-ja">JP</span>
+    </div>
+
     <!-- Loading Overlay -->
     <div id="loading-overlay" class="loading-overlay">
         <div class="loading-spinner"></div>
-        <p>Loading...</p>
+        <p data-i18n="loading">Loading...</p>
     </div>
 
     <!-- ===== LANDING PAGE ===== -->
@@ -35,19 +44,19 @@
                 <div class="capsule-icon">💌</div>
                 <div class="capsule-glow"></div>
             </div>
-            <h1 class="app-title">Time Capsule</h1>
-            <p class="app-subtitle">Send a letter to your future self</p>
-            <p class="app-description">
+            <h1 class="app-title" data-i18n="appTitle">Time Capsule</h1>
+            <p class="app-subtitle" data-i18n="appSubtitle">Send a letter to your future self</p>
+            <p class="app-description" data-i18n="appDescription" data-i18n-html="true">
                 Write down your thoughts and feelings, and deliver them to your future self.<br>
                 Your letter will arrive by email on the date you choose.
             </p>
             <button id="start-btn" class="primary-btn" onclick="showPage('write-page')">
                 <span class="btn-icon">✉️</span>
-                <span>Write a Letter</span>
+                <span data-i18n="writeLetter">Write a Letter</span>
             </button>
             <button id="list-btn" class="secondary-btn" onclick="showPage('list-page')">
                 <span class="btn-icon">📦</span>
-                <span>View Sent Capsules</span>
+                <span data-i18n="viewCapsules">View Sent Capsules</span>
             </button>
         </div>
     </div>
@@ -55,39 +64,42 @@
     <!-- ===== WRITE PAGE ===== -->
     <div id="write-page" class="page">
         <div class="page-inner">
-            <button class="back-btn" onclick="showPage('landing-page')">← Back</button>
+            <button class="back-btn" onclick="showPage('landing-page')" data-i18n="back">← Back</button>
             <div class="write-container">
                 <div class="letter-header">
                     <div class="stamp">📮</div>
-                    <h2>To My Future Self</h2>
+                    <h2 data-i18n="toFutureSelf">To My Future Self</h2>
                 </div>
                 <form id="capsule-form" onsubmit="return false;">
                     <div class="form-group">
-                        <label for="sender-name">Your Name</label>
-                        <input type="text" id="sender-name" placeholder="Enter your name..." required>
+                        <label for="sender-name" data-i18n="yourName">Your Name</label>
+                        <input type="text" id="sender-name" data-i18n-placeholder="namePlaceholder"
+                            placeholder="Enter your name..." required>
                     </div>
                     <div class="form-group">
-                        <label for="sender-email">Email Address</label>
+                        <label for="sender-email" data-i18n="emailAddress">Email Address</label>
                         <input type="email" id="sender-email" placeholder="example@mail.com" required>
-                        <span class="form-hint">Your letter will be delivered to this address</span>
+                        <span class="form-hint" data-i18n="emailHint">Your letter will be delivered to this
+                            address</span>
                     </div>
                     <div class="form-group">
-                        <label for="delivery-date">Delivery Date</label>
+                        <label for="delivery-date" data-i18n="deliveryDate">Delivery Date</label>
                         <input type="date" id="delivery-date" required>
-                        <span class="form-hint">Your email will arrive on this date</span>
+                        <span class="form-hint" data-i18n="dateHint">Your email will arrive on this date</span>
                     </div>
                     <div class="form-group">
-                        <label for="letter-subject">Subject</label>
-                        <input type="text" id="letter-subject" placeholder="e.g. To me, one year from now" required>
+                        <label for="letter-subject" data-i18n="subject">Subject</label>
+                        <input type="text" id="letter-subject" data-i18n-placeholder="subjectPlaceholder"
+                            placeholder="e.g. To me, one year from now" required>
                     </div>
                     <div class="form-group">
-                        <label for="letter-body">Letter Content</label>
-                        <textarea id="letter-body" rows="10"
+                        <label for="letter-body" data-i18n="letterContent">Letter Content</label>
+                        <textarea id="letter-body" rows="10" data-i18n-placeholder="bodyPlaceholder"
                             placeholder="Write what you want to tell your future self...&#10;&#10;Your current feelings, goals, dreams, things you cherish...&#10;Feel free to write anything."
                             required></textarea>
                     </div>
                     <div class="form-group mood-group">
-                        <label>Current Mood</label>
+                        <label data-i18n="currentMood">Current Mood</label>
                         <div class="mood-selector">
                             <button type="button" class="mood-btn" data-mood="happy"
                                 onclick="selectMood(this)">😊</button>
@@ -105,7 +117,7 @@
                     </div>
                     <button type="button" id="send-btn" class="primary-btn send-btn" onclick="sealCapsule()">
                         <span class="btn-icon">🔒</span>
-                        <span>Seal the Capsule</span>
+                        <span data-i18n="sealCapsule">Seal the Capsule</span>
                     </button>
                 </form>
             </div>
@@ -118,20 +130,21 @@
             <div class="success-animation">
                 <div class="rocket">🚀</div>
             </div>
-            <h2 class="success-title">Capsule Sealed!</h2>
+            <h2 class="success-title" data-i18n="capsuleSealed">Capsule Sealed!</h2>
             <p class="success-subtitle" id="success-date-text"></p>
-            <p class="success-detail">Your letter will be delivered by email on the date you selected.</p>
+            <p class="success-detail" data-i18n="successDetail">Your letter will be delivered by email on the date you
+                selected.</p>
             <div class="countdown-box" id="countdown-box">
-                <p class="countdown-label">Time until delivery</p>
+                <p class="countdown-label" data-i18n="timeUntilDelivery">Time until delivery</p>
                 <div class="countdown-timer" id="countdown-timer"></div>
             </div>
             <button class="primary-btn" onclick="showPage('landing-page')">
                 <span class="btn-icon">🏠</span>
-                <span>Back to Home</span>
+                <span data-i18n="backToHome">Back to Home</span>
             </button>
             <button class="secondary-btn" onclick="showPage('write-page')">
                 <span class="btn-icon">✉️</span>
-                <span>Write Another Letter</span>
+                <span data-i18n="writeAnother">Write Another Letter</span>
             </button>
         </div>
     </div>
@@ -139,16 +152,17 @@
     <!-- ===== LIST PAGE ===== -->
     <div id="list-page" class="page">
         <div class="page-inner">
-            <button class="back-btn" onclick="showPage('landing-page')">← Back</button>
-            <h2 class="list-title">📦 Sent Capsules</h2>
-            <p class="list-subtitle">Letters you've sent to your future self</p>
+            <button class="back-btn" onclick="showPage('landing-page')" data-i18n="back">← Back</button>
+            <h2 class="list-title" data-i18n="sentCapsules">📦 Sent Capsules</h2>
+            <p class="list-subtitle" data-i18n="listSubtitle">Letters you've sent to your future self</p>
             <div id="capsule-list" class="capsule-list">
                 <!-- Capsules will be rendered here -->
             </div>
             <div id="empty-state" class="empty-state">
                 <div class="empty-icon">📭</div>
-                <p>No capsules yet</p>
-                <button class="secondary-btn" onclick="showPage('write-page')">Write your first letter</button>
+                <p data-i18n="noCapsules">No capsules yet</p>
+                <button class="secondary-btn" onclick="showPage('write-page')" data-i18n="writeFirst">Write your first
+                    letter</button>
             </div>
         </div>
     </div>

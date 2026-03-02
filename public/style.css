@@ -942,3 +942,66 @@ input[type="date"] {
     transform: none;
     box-shadow: 0 4px 20px var(--glow-primary);
 }
+
+/* ===========================
+   Language Toggle
+   =========================== */
+.lang-toggle {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 30px;
+    padding: 6px 14px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.lang-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-hint);
+    transition: color 0.3s var(--ease-smooth);
+    letter-spacing: 0.05em;
+    user-select: none;
+}
+
+.lang-label.active {
+    color: var(--primary-light);
+}
+
+.lang-switch {
+    width: 40px;
+    height: 22px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.3s var(--ease-smooth), border-color 0.3s;
+}
+
+.lang-switch:hover {
+    border-color: var(--border-focus);
+}
+
+.lang-switch-knob {
+    width: 16px;
+    height: 16px;
+    background: var(--primary-light);
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.3s var(--ease-bounce);
+    box-shadow: 0 0 8px var(--glow-primary);
+}
+
+.lang-switch-knob.ja {
+    transform: translateX(18px);
+}
