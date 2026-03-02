@@ -1,5 +1,5 @@
 // ===========================
-// タイムカプセル - App Logic
+// Time Capsule - App Logic
 // ===========================
 
 // --- State ---
@@ -28,7 +28,7 @@ function createStars() {
         star.style.setProperty('--duration', (2 + Math.random() * 4) + 's');
         star.style.setProperty('--max-opacity', (0.3 + Math.random() * 0.7));
         star.style.animationDelay = Math.random() * 5 + 's';
-        
+
         // Some stars are bigger
         if (Math.random() > 0.85) {
             star.style.width = '3px';
@@ -117,12 +117,12 @@ function sealCapsule() {
     const body = document.getElementById('letter-body').value.trim();
 
     // Validation
-    if (!name) { showToast('⚠️ 名前を入力してください'); return; }
-    if (!email) { showToast('⚠️ メールアドレスを入力してください'); return; }
-    if (!validateEmail(email)) { showToast('⚠️ 正しいメールアドレスを入力してください'); return; }
-    if (!date) { showToast('⚠️ 届ける日を選んでください'); return; }
-    if (!subject) { showToast('⚠️ 件名を入力してください'); return; }
-    if (!body) { showToast('⚠️ 手紙の内容を書いてください'); return; }
+    if (!name) { showToast('⚠️ Please enter your name'); return; }
+    if (!email) { showToast('⚠️ Please enter your email address'); return; }
+    if (!validateEmail(email)) { showToast('⚠️ Please enter a valid email address'); return; }
+    if (!date) { showToast('⚠️ Please select a delivery date'); return; }
+    if (!subject) { showToast('⚠️ Please enter a subject'); return; }
+    if (!body) { showToast('⚠️ Please write your letter'); return; }
 
     // Create capsule object
     const capsule = {
@@ -144,19 +144,19 @@ function sealCapsule() {
     // Show success
     showSuccessPage(capsule);
 
-    showToast('✨ カプセルを封印しました！');
+    showToast('✨ Capsule sealed successfully!');
 }
 
 // --- Show Success Page ---
 function showSuccessPage(capsule) {
     const deliveryDate = new Date(capsule.deliveryDate + 'T00:00:00');
-    const dateText = deliveryDate.toLocaleDateString('ja-JP', {
+    const dateText = deliveryDate.toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
         day: 'numeric'
     });
 
-    document.getElementById('success-date-text').textContent = `📅 ${dateText} に届きます`;
+    document.getElementById('success-date-text').textContent = `📅 Arriving on ${dateText}`;
 
     // Countdown
     updateCountdown(deliveryDate);
@@ -172,7 +172,7 @@ function updateCountdown(targetDate) {
     const diff = targetDate - now;
 
     if (diff <= 0) {
-        document.getElementById('countdown-timer').textContent = '🎉 もう届いています！';
+        document.getElementById('countdown-timer').textContent = '🎉 Already delivered!';
         clearInterval(countdownInterval);
         return;
     }
@@ -183,8 +183,8 @@ function updateCountdown(targetDate) {
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
     let text = '';
-    if (days > 0) text += `${days}日 `;
-    text += `${hours}時間 ${minutes}分 ${seconds}秒`;
+    if (days > 0) text += `${days}d `;
+    text += `${hours}h ${minutes}m ${seconds}s`;
 
     document.getElementById('countdown-timer').textContent = text;
 }
@@ -210,15 +210,15 @@ function renderCapsuleList() {
         const now = new Date();
         const isDelivered = deliveryDate <= now;
         const status = isDelivered ? 'delivered' : 'waiting';
-        const statusText = isDelivered ? '配達済み' : '待機中';
-        
-        const dateStr = deliveryDate.toLocaleDateString('ja-JP', {
+        const statusText = isDelivered ? 'Delivered' : 'Waiting';
+
+        const dateStr = deliveryDate.toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
             day: 'numeric'
         });
 
-        const createdStr = new Date(capsule.createdAt).toLocaleDateString('ja-JP', {
+        const createdStr = new Date(capsule.createdAt).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
             day: 'numeric'
@@ -255,11 +255,11 @@ function openCapsuleDetail(id) {
     const now = new Date();
     const isDelivered = deliveryDate <= now;
 
-    const dateStr = deliveryDate.toLocaleDateString('ja-JP', {
+    const dateStr = deliveryDate.toLocaleDateString('en-US', {
         year: 'numeric', month: 'long', day: 'numeric'
     });
 
-    const createdStr = new Date(capsule.createdAt).toLocaleDateString('ja-JP', {
+    const createdStr = new Date(capsule.createdAt).toLocaleDateString('en-US', {
         year: 'numeric', month: 'long', day: 'numeric'
     });
 
@@ -270,12 +270,12 @@ function openCapsuleDetail(id) {
             <button class="modal-close" onclick="closeModal()">&times;</button>
             <div class="modal-subject">${moodToEmoji(capsule.mood)} ${escapeHtml(capsule.subject)}</div>
             <div class="modal-meta">
-                <span>📝 作成: ${createdStr}</span>
-                <span>📬 届く日: ${dateStr}</span>
+                <span>📝 Created: ${createdStr}</span>
+                <span>📬 Delivery: ${dateStr}</span>
                 <span>👤 ${escapeHtml(capsule.name)}</span>
             </div>
             <div class="modal-body">${escapeHtml(capsule.body)}</div>
-            <button class="modal-delete-btn" onclick="deleteCapsule('${capsule.id}')">🗑️ このカプセルを削除</button>
+            <button class="modal-delete-btn" onclick="deleteCapsule('${capsule.id}')">🗑️ Delete this capsule</button>
         </div>
     `;
 
@@ -303,13 +303,13 @@ function closeModal() {
 
 // --- Delete Capsule ---
 function deleteCapsule(id) {
-    if (!confirm('このカプセルを削除しますか？\nこの操作は取り消せません。')) return;
+    if (!confirm('Delete this capsule?\nThis action cannot be undone.')) return;
 
     capsules = capsules.filter(c => c.id !== id);
     saveCapsules();
     closeModal();
     renderCapsuleList();
-    showToast('🗑️ カプセルを削除しました');
+    showToast('🗑️ Capsule deleted');
 }
 
 // --- Reset Form ---

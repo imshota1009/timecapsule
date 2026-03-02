@@ -1,8 +1,8 @@
 /**
- * タイムカプセル - Cloud Functions
+ * Time Capsule - Cloud Functions
  * 
- * 毎日自動で実行され、届ける日が来たカプセルを
- * メールで送信するバックグラウンド処理です。
+ * Runs automatically every day to check for capsules
+ * whose delivery date has arrived, and sends them by email.
  */
 
 const { onSchedule } = require("firebase-functions/v2/scheduler");
@@ -11,18 +11,18 @@ const { initializeApp } = require("firebase-admin/app");
 const { getFirestore } = require("firebase-admin/firestore");
 const nodemailer = require("nodemailer");
 
-// Firebase初期化
+// Initialize Firebase
 initializeApp();
 const db = getFirestore();
 
 // ===================================
-// メール送信の設定
-// 注意: 本番環境ではGmailのアプリパスワードまたは
-// SendGrid等のメールサービスを使ってください
+// Email Configuration
+// Note: For production, use Gmail App Password or
+// a mail service like SendGrid
 // ===================================
 
-// Gmail用のメール送信設定
-// 環境変数から設定を読み込む
+// Gmail mail transport configuration
+// Reads settings from environment variables
 function getMailTransporter() {
     return nodemailer.createTransport({
         service: "gmail",
@@ -34,11 +34,11 @@ function getMailTransporter() {
 }
 
 // ===================================
-// 1. 毎日のメール配信チェック（スケジュール関数）
-// 毎朝9:00（日本時間）に実行
+// 1. Daily Email Delivery Check (Scheduled Function)
+// Runs every day at 9:00 AM (Japan Time)
 // ===================================
 exports.dailyEmailDelivery = onSchedule({
-    schedule: "0 9 * * *",  // 毎日9:00 UTC → 日本時間18:00
+    schedule: "0 9 * * *",  // Every day at 9:00 JST
     timeZone: "Asia/Tokyo",
     region: "asia-northeast1",
 }, async (event) => {
@@ -48,7 +48,7 @@ exports.dailyEmailDelivery = onSchedule({
     const todayStr = today.toISOString().split("T")[0]; // "YYYY-MM-DD"
 
     try {
-        // 今日が届ける日で、まだメールを送っていないカプセルを取得
+        // Get capsules whose delivery date has arrived and haven't been emailed yet
         const snapshot = await db.collection("capsules")
             .where("deliveryDate", "<=", todayStr)
             .where("emailSent", "==", false)
@@ -63,14 +63,14 @@ exports.dailyEmailDelivery = onSchedule({
 
         const transporter = getMailTransporter();
 
-        // 各カプセルにメールを送信
+        // Send email for each capsule
         for (const doc of snapshot.docs) {
             const capsule = doc.data();
 
             try {
                 await sendCapsuleEmail(transporter, capsule);
 
-                // 送信済みに更新
+                // Mark as delivered
                 await doc.ref.update({
                     emailSent: true,
                     status: "delivered",
@@ -91,7 +91,7 @@ exports.dailyEmailDelivery = onSchedule({
 });
 
 // ===================================
-// 2. カプセル作成時の確認メール
+// 2. Confirmation Email on Capsule Creation
 // ===================================
 exports.onCapsuleCreated = onDocumentCreated({
     document: "capsules/{capsuleId}",
@@ -108,7 +108,7 @@ exports.onCapsuleCreated = onDocumentCreated({
         const transporter = getMailTransporter();
 
         const deliveryDate = new Date(capsule.deliveryDate + "T00:00:00+09:00");
-        const dateStr = deliveryDate.toLocaleDateString("ja-JP", {
+        const dateStr = deliveryDate.toLocaleDateString("en-US", {
             year: "numeric",
             month: "long",
             day: "numeric",
@@ -119,25 +119,25 @@ exports.onCapsuleCreated = onDocumentCreated({
             hopeful: "🌟", nostalgic: "🥹", determined: "💪",
         }[capsule.mood] || "💌";
 
-        // 確認メール送信
+        // Send confirmation email
         await transporter.sendMail({
-            from: `"タイムカプセル 💌" <${process.env.GMAIL_USER}>`,
+            from: `"Time Capsule 💌" <${process.env.GMAIL_USER}>`,
             to: capsule.email,
-            subject: `📦 カプセルが封印されました！「${capsule.subject}」`,
+            subject: `📦 Your capsule has been sealed! "${capsule.subject}"`,
             html: `
                 <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 500px; margin: 0 auto; background: #14142e; color: #f0eef6; border-radius: 16px; overflow: hidden;">
                     <div style="background: linear-gradient(135deg, #7c5bf5, #5b34d4); padding: 30px; text-align: center;">
                         <div style="font-size: 3rem;">${moodEmoji}</div>
-                        <h1 style="color: white; font-size: 1.5rem; margin: 10px 0 0;">カプセル封印完了！</h1>
+                        <h1 style="color: white; font-size: 1.5rem; margin: 10px 0 0;">Capsule Sealed!</h1>
                     </div>
                     <div style="padding: 25px;">
-                        <p style="color: #9d9bb8; font-size: 0.9rem;">${capsule.name}さん、手紙を封印しました。</p>
+                        <p style="color: #9d9bb8; font-size: 0.9rem;">Hi ${capsule.name}, your letter has been sealed.</p>
                         <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(124,91,245,0.2); border-radius: 12px; padding: 16px; margin: 16px 0;">
-                            <p style="font-weight: bold; color: #a78bfa; margin-bottom: 8px;">📬 届く日: ${dateStr}</p>
-                            <p style="font-weight: bold; color: #f0eef6;">件名: ${capsule.subject}</p>
+                            <p style="font-weight: bold; color: #a78bfa; margin-bottom: 8px;">📬 Delivery Date: ${dateStr}</p>
+                            <p style="font-weight: bold; color: #f0eef6;">Subject: ${capsule.subject}</p>
                         </div>
                         <p style="color: #6b6890; font-size: 0.85rem; text-align: center; margin-top: 20px;">
-                            その日が来るまで、楽しみに待っていてくださいね ✨
+                            Look forward to it until that day arrives ✨
                         </p>
                     </div>
                 </div>
@@ -152,7 +152,7 @@ exports.onCapsuleCreated = onDocumentCreated({
 });
 
 // ===================================
-// メール送信ヘルパー関数
+// Email Sending Helper Function
 // ===================================
 async function sendCapsuleEmail(transporter, capsule) {
     const moodEmoji = {
@@ -164,26 +164,26 @@ async function sendCapsuleEmail(transporter, capsule) {
         ? new Date(capsule.createdAt.toDate ? capsule.createdAt.toDate() : capsule.createdAt)
         : new Date();
 
-    const createdStr = createdDate.toLocaleDateString("ja-JP", {
+    const createdStr = createdDate.toLocaleDateString("en-US", {
         year: "numeric",
         month: "long",
         day: "numeric",
     });
 
-    // 手紙の内容を改行対応
+    // Convert newlines in letter body to HTML line breaks
     const bodyHtml = capsule.body.replace(/\n/g, "<br>");
 
     await transporter.sendMail({
-        from: `"タイムカプセル 💌" <${process.env.GMAIL_USER}>`,
+        from: `"Time Capsule 💌" <${process.env.GMAIL_USER}>`,
         to: capsule.email,
-        subject: `💌 過去の自分からの手紙が届きました！「${capsule.subject}」`,
+        subject: `💌 A letter from your past self has arrived! "${capsule.subject}"`,
         html: `
             <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 500px; margin: 0 auto; background: #14142e; color: #f0eef6; border-radius: 16px; overflow: hidden;">
                 <div style="background: linear-gradient(135deg, #f472b6, #7c5bf5); padding: 30px; text-align: center;">
                     <div style="font-size: 3rem;">💌</div>
-                    <h1 style="color: white; font-size: 1.5rem; margin: 10px 0 0;">過去の自分からの手紙</h1>
+                    <h1 style="color: white; font-size: 1.5rem; margin: 10px 0 0;">A Letter From Your Past Self</h1>
                     <p style="color: rgba(255,255,255,0.8); font-size: 0.9rem; margin-top: 8px;">
-                        ${createdStr} のあなたからのメッセージです
+                        A message from you on ${createdStr}
                     </p>
                 </div>
                 <div style="padding: 25px;">
@@ -192,7 +192,7 @@ async function sendCapsuleEmail(transporter, capsule) {
                             ${moodEmoji} ${capsule.subject}
                         </p>
                         <p style="color: #6b6890; font-size: 0.8rem;">
-                            ${capsule.name}より｜気分: ${moodEmoji}
+                            From ${capsule.name} | Mood: ${moodEmoji}
                         </p>
                     </div>
                     <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 20px; line-height: 1.8; color: #d1d0e0; font-size: 0.95rem;">
@@ -200,10 +200,10 @@ async function sendCapsuleEmail(transporter, capsule) {
                     </div>
                     <div style="text-align: center; margin-top: 24px; padding-top: 16px; border-top: 1px solid rgba(124,91,245,0.2);">
                         <p style="color: #6b6890; font-size: 0.8rem;">
-                            🕰️ この手紙は ${createdStr} に書かれました
+                            🕰️ This letter was written on ${createdStr}
                         </p>
                         <p style="color: #a78bfa; font-size: 0.85rem; margin-top: 8px;">
-                            タイムカプセル ✨ 未来の自分へ手紙を送ろう
+                            Time Capsule ✨ Send a letter to your future self
                         </p>
                     </div>
                 </div>

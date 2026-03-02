@@ -1,5 +1,5 @@
 /* ===========================
-   タイムカプセル - Design System
+   Time Capsule - Design System
    =========================== */
 
 :root {
@@ -23,7 +23,7 @@
     --glow-accent: rgba(244, 114, 182, 0.3);
 
     /* Typography */
-    --font-main: 'Zen Maru Gothic', 'M PLUS Rounded 1c', sans-serif;
+    --font-main: 'Inter', 'Outfit', sans-serif;
 
     /* Spacing */
     --radius-sm: 8px;
